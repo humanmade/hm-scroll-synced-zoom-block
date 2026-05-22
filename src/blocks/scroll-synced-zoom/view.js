@@ -142,8 +142,8 @@ if ( ! HAS_NATIVE_TIMELINE && ! PREFERS_REDUCED_MOTION ) {
 						],
 						backdropStops: [
 							[ 0, 0 ],
-							[ 0.4, 1 ],
-							[ 0.6, 1 ],
+							[ 0.4, 0.8 ],
+							[ 0.6, 0.8 ],
 							[ 1, 0 ],
 						],
 				  }
