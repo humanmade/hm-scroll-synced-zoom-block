@@ -1,0 +1,27 @@
+/**
+ * Scroll-Synced Zoom block — editor-only styles.
+ *
+ * The scroll animation can't run meaningfully inside the editor canvas, so
+ * the structure is shown flat: no sticky pinning, no full-viewport stage,
+ * no transform, no fixed backdrop. Authors edit the inner content at its
+ * natural size. This stylesheet loads after view.css, so plain rules here
+ * override the front-end ones without `!important`.
+ */
+
+.wp-block-hm-scroll-synced-zoom.is-mode-modal {
+	min-height: 0;
+}
+
+.wp-block-hm-scroll-synced-zoom.is-mode-modal .hm-scroll-synced-zoom__frame {
+	position: static;
+	min-height: 0;
+}
+
+.wp-block-hm-scroll-synced-zoom .hm-scroll-synced-zoom__card {
+	transform: none;
+	animation: none;
+}
+
+.wp-block-hm-scroll-synced-zoom .hm-scroll-synced-zoom__frame::after {
+	display: none;
+}

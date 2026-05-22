@@ -1,0 +1,172 @@
+/**
+ * Scroll-Synced Zoom block — front-end styles.
+ *
+ * Two execution paths:
+ *
+ *  1. Native — browsers that support `animation-timeline: view()` run the
+ *     CSS @keyframes below. GPU-accelerated, no JavaScript.
+ *  2. Fallback — browsers without native support get the structural styles
+ *     only; view.js writes the custom properties (`--hm-sz-scale` and, for
+ *     modal mode, `--hm-sz-backdrop-opacity`) that the rules below read.
+ *
+ * The modal mode's named view-timeline lives on the stage (the block root),
+ * not on the sticky card — `view()` on a sticky element tracks its pinned
+ * position and never progresses.
+ *
+ * The modal backdrop is a solid `position: fixed` pseudo-element so it
+ * always covers the whole viewport; it fades in by opacity as the card
+ * nears the centre, holds through the peak, then fades back out.
+ *
+ * The card is capped to `--hm-sz-max-coverage` percent of the viewport,
+ * pre-divided by `--hm-sz-peak` so the *scaled* result respects the cap.
+ *
+ * Keyframe stops here MUST stay in sync with the stop arrays in view.js.
+ */
+
+@media (prefers-reduced-motion: no-preference) {
+
+	/* ----------------------------------------------------------------
+	 * Shared — size cap and scroll snapping.
+	 * -------------------------------------------------------------- */
+
+	/* Snaps the block's centre to the viewport centre — i.e. peak zoom.
+	 * Inert unless the page's scroll root sets `scroll-snap-type`. */
+	.wp-block-hm-scroll-synced-zoom {
+		scroll-snap-align: center;
+	}
+
+	/* At peak zoom the rendered size never exceeds `--hm-sz-max-coverage`%
+	 * of the viewport. */
+	.wp-block-hm-scroll-synced-zoom .hm-scroll-synced-zoom__card {
+		width: 100%;
+		max-width: calc(var(--hm-sz-max-coverage, 90) * 1vw / var(--hm-sz-peak, 1.15));
+		max-height: calc(var(--hm-sz-max-coverage, 90) * 1vh / var(--hm-sz-peak, 1.15));
+		margin-inline: auto;
+		transform-origin: center center;
+		transform: scale(var(--hm-sz-scale, 1));
+		will-change: transform;
+	}
+
+	/* ----------------------------------------------------------------
+	 * Zoom + modal — the stage gives scroll travel, the frame pins to
+	 * the viewport, the card scales, and a fixed radial-gradient
+	 * pseudo-element dims the rest of the viewport.
+	 * -------------------------------------------------------------- */
+
+	.wp-block-hm-scroll-synced-zoom.is-mode-modal {
+		min-height: var(--hm-sz-stage-height, 100vh);
+	}
+
+	.wp-block-hm-scroll-synced-zoom.is-mode-modal .hm-scroll-synced-zoom__frame {
+		position: sticky;
+		top: 0;
+
+		/* Lift the frame's whole subtree (backdrop included) above sibling
+		 * sections, which are `position: relative` in this theme and would
+		 * otherwise paint over a `z-index: auto` backdrop. */
+		z-index: 1;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		min-height: 100vh;
+	}
+
+	.wp-block-hm-scroll-synced-zoom.is-mode-modal .hm-scroll-synced-zoom__card {
+		position: relative;
+		z-index: 1;
+	}
+
+	/* The backdrop lives on the frame, not the card: the card's `transform`
+	 * would make it the containing block for a fixed-position descendant,
+	 * clamping the backdrop to the card instead of the viewport. */
+	.wp-block-hm-scroll-synced-zoom.is-mode-modal .hm-scroll-synced-zoom__frame::after {
+		content: "";
+		position: fixed;
+		z-index: 0;
+		inset: 0;
+		background: var(--hm-sz-backdrop, #000000bf);
+		opacity: var(--hm-sz-backdrop-opacity, 0);
+		pointer-events: none;
+	}
+
+	/* ----------------------------------------------------------------
+	 * Native scroll-driven animation path.
+	 * -------------------------------------------------------------- */
+
+	@supports (animation-timeline: view()) {
+
+		.wp-block-hm-scroll-synced-zoom.is-mode-zoom .hm-scroll-synced-zoom__card {
+			animation: hm-sz-zoom linear both;
+			animation-timeline: view();
+			animation-range: cover 0% cover 100%;
+		}
+
+		.wp-block-hm-scroll-synced-zoom.is-mode-modal {
+			view-timeline-name: --hm-sz-timeline;
+			view-timeline-axis: block;
+		}
+
+		.wp-block-hm-scroll-synced-zoom.is-mode-modal .hm-scroll-synced-zoom__card {
+			animation: hm-sz-modal-scale linear both;
+			animation-timeline: --hm-sz-timeline;
+			animation-range: cover 0% cover 100%;
+		}
+
+		.wp-block-hm-scroll-synced-zoom.is-mode-modal .hm-scroll-synced-zoom__frame::after {
+			animation: hm-sz-modal-backdrop linear both;
+			animation-timeline: --hm-sz-timeline;
+			animation-range: cover 0% cover 100%;
+		}
+	}
+
+	@keyframes hm-sz-zoom {
+
+		0% {
+			transform: scale(0.9);
+		}
+
+		50% {
+			transform: scale(var(--hm-sz-peak, 1.15));
+		}
+
+		100% {
+			transform: scale(0.9);
+		}
+	}
+
+	@keyframes hm-sz-modal-scale {
+
+		0% {
+			transform: scale(0.85);
+		}
+
+		50% {
+			transform: scale(var(--hm-sz-peak, 1.25));
+		}
+
+		100% {
+			transform: scale(0.85);
+		}
+	}
+
+	/* The backdrop fades in as the element nears the centre, holds solid
+	 * through the peak, then fades back out. */
+	@keyframes hm-sz-modal-backdrop {
+
+		0% {
+			opacity: 0;
+		}
+
+		40% {
+			opacity: 1;
+		}
+
+		60% {
+			opacity: 1;
+		}
+
+		100% {
+			opacity: 0;
+		}
+	}
+}

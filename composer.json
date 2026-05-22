@@ -1,0 +1,9 @@
+{
+	"name": "humanmade/hm-scroll-synced-zoom-block",
+	"description": "A block that scales its contents on scroll, optionally pinning into a modal-style spotlight",
+	"type": "wordpress-plugin",
+	"license": "GPL-2.0-or-later",
+	"require": {
+		"php": ">=8.0"
+	}
+}

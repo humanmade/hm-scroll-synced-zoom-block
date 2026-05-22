@@ -1,0 +1,45 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "hm/scroll-synced-zoom",
+	"title": "Scroll-Synced Zoom",
+	"category": "design",
+	"icon": "search",
+	"description": "Scales its contents as they scroll through the viewport, optionally pinning into a modal-style spotlight with a backdrop.",
+	"keywords": [ "scroll", "zoom", "animation", "modal", "parallax" ],
+	"textdomain": "hm-scroll-synced-zoom-block",
+	"attributes": {
+		"mode": {
+			"type": "string",
+			"default": "zoom"
+		},
+		"zoomLevel": {
+			"type": "number",
+			"default": 1.15
+		},
+		"maxCoverage": {
+			"type": "number",
+			"default": 90
+		},
+		"backdropColor": {
+			"type": "string",
+			"default": "#000000bf"
+		},
+		"stageHeight": {
+			"type": "string",
+			"default": "100vh"
+		}
+	},
+	"supports": {
+		"align": [ "wide", "full" ],
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"html": false
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./view.css",
+	"viewScript": "file:./view.js"
+}
