@@ -153,18 +153,17 @@
 	 * through the peak, then fades back out. */
 	@keyframes hm-sz-modal-backdrop {
 
-		0% {
+		0%,
+		25% {
 			opacity: 0;
 		}
 
-		40% {
+		45%,
+		55% {
 			opacity: 0.8;
 		}
 
-		60% {
-			opacity: 0.8;
-		}
-
+		75%,
 		100% {
 			opacity: 0;
 		}
